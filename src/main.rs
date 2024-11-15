@@ -1,7 +1,10 @@
+mod scanner;
+use crate::scanner::*;
+
 use std::env;
 use std::error::Error;
 use std::fs;
-use std::io;
+use std::io::{self,BufRead,Write};
 use std::process::exit;
 
 fn run_file(path: &str) -> Result<(), String> {
@@ -12,19 +15,42 @@ fn run_file(path: &str) -> Result<(), String> {
 }
 
 fn run(contents: &str) -> Result<(), String> {
-    return Err("Not Implemented");
-}
+    let scanner = Scanner::new(contents);
+    let tokens = scanner.scan_tokens()?;
 
-fn run_prompt() -> Result<(),Error>{
-    print!(">");
-    let mut buffer = String::new();
-    let mut handle = stdin.lock();
-    let stdin = io::stdin();
-    match handle.read_line(&mut buffer){
-        Ok(_)=>(),
-        Err(_)=>return Err("Couldn't read line".to_string());
+    for token in tokens{
+        println!("{:?}",token);
     }
-    println!("You wrote :{}",buffer);
+    return Err("Not Implemented").to_string();
+} 
+
+fn run_prompt() -> Result<(),String>{ 
+    loop  {
+        print!(">");
+    
+        match io::stdout().flush(){
+            Ok(_)=>(),
+            Err(_)=>return Err("Could not flush stdout".to_string()),
+        };
+        let mut buffer = String::new();
+        let stdin = io::stdin();
+        let mut handle = stdin.lock();
+        match handle.read_line(&mut buffer){
+
+            Ok(n)=>{
+                if n <=1 {
+                    return Ok(());
+                }
+            },
+            Err(_)=> return Err("Couldn't read line".to_string()),
+            
+        }
+        println!("You wrote : {}", buffer);
+        match run(&buffer){
+            Ok(_)=>(),
+            Err(msf)=>println!("{}",msg),
+        }
+    }  
 }
 
 fn main() {
@@ -45,7 +71,8 @@ fn main() {
         match run_prompt(){
             Ok(_)=> exit(0),
             Err(msg)=>{
-                println!()
+                println!("Errors");
+                exit(1);
             }
         }
     }
