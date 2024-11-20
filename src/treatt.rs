@@ -1,11 +1,15 @@
+use std::fmt::Debug;
+
+#[derive(Debug,Clone)]
 struct Monster {
     health: i32,
 }
-
+#[derive(Debug, Clone)]
 struct Wizard {}
+#[derive(Debug, Clone)]
 struct Ranger {}
 
-trait FightClose {
+trait FightClose: Debug + Clone {
     fn attack_with_sword(&self, opponent: &mut Monster) {
         opponent.health -= 2;
         println!(
@@ -27,7 +31,7 @@ impl FightClose for Wizard {}
 
 impl FightFromDistance for Ranger {}
 
-trait FightFromDistance {
+trait FightFromDistance: Debug + Clone {
     fn attack_with_bow(&self, opponent: &mut Monster, distance: u32) {
         if distance < 10 {
             opponent.health -= 10;
@@ -57,9 +61,11 @@ fn main() {
 
     radagast.attack_with_sword(&mut uruk_hai);
 
-    let distance =8;
+    let distance = 8;
 
     radagast.attack_with_sword(&mut uruk_hai);
+
+    aragon.attack_with_bow(&mut uruk_hai, distance);
 
     aragon.attack_with_bow(&mut uruk_hai, distance);
 }
