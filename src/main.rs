@@ -1,6 +1,7 @@
 mod scanner;
 mod traits;
 mod treatt;
+mod trits;
 use crate::scanner::*;
 
 use std::env;
