@@ -121,6 +121,23 @@ impl Scanner{
         }
     }
 
+    fn string(self:&mut Self)->Result<(),String>{
+        while self.peek() != "" && !self.is_at_end(){
+            if self.peek() == '\n'{
+                self.line += 1
+            }
+            self.advance();
+        }
+        if self.is_at_end(){
+            return Err("Unterminated string");
+        }
+        self.advance();
+        let value = self.source.as_bytes()[self.start + 1..self.current].iter().map(|byt| *byt as char).collect()::<String>();
+        self.add_token_lit(String,value);
+
+        Ok(())
+    }
+
     fn peek(self :&Self)->char{
         if self.is_at_end(){
             return '\0';
@@ -172,7 +189,6 @@ pub enum TokenType{
     Slash,
     Start,
     Star,
-
     // One or Two Char
     Bang, Bang_Equal, Equal, Equal_Equal,Greater,Greater_Equal,Less,Less_Equal,
     
